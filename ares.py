@@ -2,29 +2,31 @@ import requests
 
 
 class AresManager:
-    """Retrieves and manipulates data from Czech Republics ARES register
+    """Retrieves and manipulates data from the Czech Republic's ARES register
 
-    The retrievement is based on unique ID number each company in Czech republic has called "IČO"
-    ICO is used to return subjects data from the register.
-    These data can be further
+    The lookup is based on unique ID number called "IČO" that each company in the Czech republic has
+    Since the word "IČO" contains czech diacritics, it is further replaced with "ICO" or "ico" in the code
+    The subject's data can be further manipulated by other methods
 
     Methods:
-        get_subject_by_ico: This is the core method of the whole class. It returns subject data based on a given ICO
-        get_subject_formal_description: Retu
+        get_subject_by_ico: This is "the core method" of the whole class. It returns subject datavfrom ARES based on a given ICO
+        get_subject_formal_description: Returns a description of a subject in a way expected in formal written communication
     """
 
     def __init__(self):
-        self.ICO_LENGTH = 8  # ICO in the Czech Republic is always eight-digit
-        self.ARES_REQUEST_URL = "https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/"
+
+        # setting up
+        self._ICO_LENGTH = 8  # ICO in the Czech Republic is always eight-digit long
+        self._ARES_REQUEST_URL = "https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/"  # API endpoint
 
     def get_subject_by_ico(self, ico):
         """Returns subject data as dictionary from ARES register
 
-        Looks up subject by its unique ID number (IČO) IN ARES register REST Api endpoint
+        Looks up subject by its ICO IN ARES register REST Api endpoint
         Returns subject data as dictionary (with some nested dictionaries)
 
-        The ICO is always eight-digit. If less digits are passed, zeros are added before
-        This is because lot of state institutions have ICO starting with several zeros
+        The ICO is always eight-digit. If less digits are passed, zeros are added before it up to full length
+        This is because lot of state institutions in the Czech Republic have ICO starting with several zeros
         If ICO parameter is ever passed by a user input, it would be cumbersome to write them all
 
         The result relies on the ARES server REST Api settings to not change over time
@@ -41,32 +43,32 @@ class AresManager:
 
         """
         try:
-            string_ico = str(ico)  # we force ico argument to be string even if passed as number
+            string_ico = str(ico)  # we force ico argument to be string even if it was passed as a number
         except TypeError as e:
             print(f'string conversion failed on {ico}: {e}')
             return
 
         # if less than 8 digits were passed, the length is insufficient
-        length_insufficient = self.ICO_LENGTH - len(string_ico)
+        length_insufficient = self._ICO_LENGTH - len(string_ico)
 
         if length_insufficient:  # zeros will be added before ico up to required length
-            string_ico = length_insufficient * "0" + string_ico  # this allows
+            string_ico = length_insufficient * "0" + string_ico
 
-        response = requests.get(self.ARES_REQUEST_URL + string_ico)
+        response = requests.get(self._ARES_REQUEST_URL + string_ico)  # actually retrieving the data
 
         if response.status_code != 200:
-            # if request is not successfull, None is returned.
+            # if request is not successfull, None is returned
             return
 
-        data = response.json()
+        data = response.json()  # ARES gives data in JSON format. Using .json() results in a dictionary of values
         return data
 
     def get_subject_formal_description(self, ico):
-        """Returns subject data in a way expected in formal human communication
+        """Returns subject data in a way expected in a formal human written communication
 
-        Looks up subject by its unique ID number (IČO) IN ARES register
+        Looks up the subject by its ICO IN ARES register
         Returns some of its data that are considered to be descriptive enough
-        These are given by a Czech laws (based on circumstances) or simply by common conventions
+        These are given by the Czech laws (based on circumstances) or simply by a common conventions
         If subject is not successfully found, None is returned
 
         Args:
@@ -76,11 +78,7 @@ class AresManager:
             string or None
 
         """
-        data = self.get_subject_by_ico(ico)
-        if data:
+        data = self.get_subject_by_ico(ico)  # retrieving all the data of the subject as a dictionary
+        if data:    # if succesfully retrieved, use only some of them
             return f'{data["obchodniJmeno"]}, IČO {data["ico"]}, sídlem {data["sidlo"]["textovaAdresa"]}'
 
-
-
-ares_manager = AresManager()
-print(ares_manager.get_subject_formal_description('kuřecí'))
