@@ -9,17 +9,16 @@ class AresManager:
     The subject's data can be further manipulated by other methods
 
     Methods:
-        get_subject_by_ico: This is "the core method" of the whole class. It returns subject datavfrom ARES based on a given ICO
+        get_subject_by_ico: This is "the core method" of the whole class. It returns subject data from ARES based on a given ICO
         get_subject_formal_description: Returns a description of a subject in a way expected in formal written communication
     """
 
-    def __init__(self):
+    # "constants"
+    ICO_LENGTH = 8  # ICO in the Czech Republic is always eight-digit long
+    ARES_REQUEST_URL = "https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/"  # ARES API endpoint
 
-        # setting up
-        self._ICO_LENGTH = 8  # ICO in the Czech Republic is always eight-digit long
-        self._ARES_REQUEST_URL = "https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/"  # API endpoint
-
-    def get_subject_by_ico(self, ico):
+    @staticmethod
+    def get_subject_by_ico(ico):
         """Returns subject data as dictionary from ARES register
 
         Looks up subject by its ICO IN ARES register REST Api endpoint
@@ -49,12 +48,12 @@ class AresManager:
             return
 
         # if less than 8 digits were passed, the length is insufficient
-        length_insufficient = self._ICO_LENGTH - len(string_ico)
+        length_insufficient = AresManager.ICO_LENGTH - len(string_ico)
 
         if length_insufficient:  # zeros will be added before ico up to required length
             string_ico = length_insufficient * "0" + string_ico
 
-        response = requests.get(self._ARES_REQUEST_URL + string_ico)  # actually retrieving the data
+        response = requests.get(AresManager.ARES_REQUEST_URL + string_ico)  # actually retrieving the data
 
         if response.status_code != 200:
             # if request is not successfull, None is returned
@@ -63,7 +62,8 @@ class AresManager:
         data = response.json()  # ARES gives data in JSON format. Using .json() results in a dictionary of values
         return data
 
-    def get_subject_formal_description(self, ico):
+    @staticmethod
+    def get_subject_formal_description(ico):
         """Returns subject data in a way expected in a formal human written communication
 
         Looks up the subject by its ICO IN ARES register
@@ -78,7 +78,6 @@ class AresManager:
             string or None
 
         """
-        data = self.get_subject_by_ico(ico)  # retrieving all the data of the subject as a dictionary
+        data = AresManager.get_subject_by_ico(ico)  # retrieving all the data of the subject as a dictionary
         if data:    # if succesfully retrieved, use only some of them
             return f'{data["obchodniJmeno"]}, IČO {data["ico"]}, sídlem {data["sidlo"]["textovaAdresa"]}'
-
