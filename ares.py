@@ -1,7 +1,7 @@
 import requests
 
 
-class AresManager:
+class AresApiClient:
     """Retrieves and manipulates data from the Czech Republic's ARES register
 
     The lookup is based on unique ID number called "IČO" that each company in the Czech republic has
