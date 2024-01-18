@@ -150,7 +150,7 @@ class AresApiClientManager:
         print(("Fill in the IČO of any economic subject in the Czech Republic.\n"
                "(or keep blank and press ENTER to quit)\n"))
 
-        quit_by = {"", "q", 0, "quit", "quit()", "exit", "exit()", "abort", "abort()", }
+        quit_by = {"", "q", 0, "quit", "quit()", "exit", "exit()", "abort", "abort()", "stop", "stop()"}
         prompt = "\nfill in the IČO: "  # IČO may be a string or an integer, both is accepted
         user_input = True  # default input is True to start the cycle
 
