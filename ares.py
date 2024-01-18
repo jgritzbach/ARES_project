@@ -59,19 +59,19 @@ class AresApiClient:
 
     @staticmethod
     def validate_ico(ico):
-        """Mutates the ico to be suited for ARES API
+        """Subjects the ico to a series of test. Modifies the ico, if needed, to be suited for ARES API
 
-        Returns: string (or None if string conversion fails)
+        Returns: string ico (or None if any of the test fails)
         """
         tests = [AresApiClient._force_string,       # Parses ico to a string, if not already
-                 AresApiClient._check_if_is_digit,  # we do not use str.isdigit() alone, since it would not return ico
-                 AresApiClient._check_exceeding_allowed_length,
-                 AresApiClient._force_full_length,]
+                 AresApiClient._check_if_is_digit,  # str.isdigit() alone won't do - we need ico returned, not boolean
+                 AresApiClient._check_exceeding_allowed_length,  # not allow anything beyond 8-digit long
+                 AresApiClient._force_full_length,]  # not allow anything below 8-digit, add zeros before if needed
 
-        for test in tests:
-            ico = test(ico)
-            if not ico:
-                return  # should any of the tests fail, None is returned
+        for test in tests:  # let's run the tests
+            ico = test(ico)  # we allow ico to be repeatedly tested and modified until we are satisfied with it
+            if not ico:  # should any of the tests fail,
+                return  # None is returned immediately
 
         return ico  # in case all test passed, the (potentially modified) ico is returned
 
@@ -158,7 +158,7 @@ class AresApiClientManager:
 
             # acquiring the input
             user_input = input(prompt)
-            user_input = ''.join(char for char in user_input if char not in string.whitespace) # removing any whitespace
+            user_input = ''.join(char for char in user_input if char not in string.whitespace)  # removing whitespaces
             # user_input = user_input.replace(" ", "")
 
             # if user wants to quit
