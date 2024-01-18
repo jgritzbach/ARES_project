@@ -27,7 +27,7 @@ Sometimes the Czech laws (or simply common conventions) require proper identific
  *get_subject_formal_description()* method **takes ico**, retrieves data from ARES **and returns formal description of the subject as it is expected to look like in a formal human written communication**.
 
 For example, if you pass 00001350 to the function, it returns:
-"Československá obchodní banka, a. s., IČO 00001350, registered office Radlická 333/150, Radlice, 15000 Prague 5"
+"Československá obchodní banka, a. s., IČO 00001350, sídlem Radlická 333/150, Radlice, 15000 Prague 5"
 
 Reliable identification of the subject is an important part of lawsuits or court decisions. Identifying subjects manually can be cumbersome and typo-prone. This method removes that burden and also ensures that the data are up to date.
 
