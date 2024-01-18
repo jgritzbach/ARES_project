@@ -44,7 +44,7 @@ class AresApiClient:
         """Returns subject data from ARES formatted as string in a way expected in a formal human written communication
 
         Sometimes the Czech laws (or simply common conventions) require proper identification of the subject
-        Usually the whole name, IČO and full address is required to identify subject reliably
+        Usually, the whole name, IČO and full address are required to identify the subject reliably
 
         Args:
             ico (string or int): the unique ID number used to look up the subject in the ARES register
