@@ -102,3 +102,52 @@ class AresApiClient:
             ico = length_insufficient * "0" + ico
 
         return ico
+
+
+class AresApiClientManager:
+    """Serves for user interaction with the AresApiClient class
+
+    AresApiClient class itself can be used to retrieve the data about the economic subject from ARES public register.
+    It does not need any user interaction for this, if IČO parameter is passed by other parts of your program.
+    However, with this manager, AresApiClient can be used to interact with the user through CLI
+    """
+
+    @staticmethod
+    def interact():
+        """Prompts user to enter IČO. Returns the formal description of a subject based on ARES data.
+
+        Method works in cycle, so as many consecutive IČO can be entered as needed.
+        This is useful if you are iterating through a long list of subjects.
+        Imagine the insolvency administrator preparing a draft of distribution table for payments to creditors
+        """
+
+        print('\nWelcome to the interactive mode of AresApiClient!\n')
+        print(("Fill in the IČO of any economic subject in the Czech Republic.\n"
+               "(or keep blank and press ENTER to quit)\n"))
+
+        quit_by = {"", "q", 0, "quit", "quit()", "exit", "exit()", "abort", "abort()", }
+       # allowed_formats = ["%y-%m-%d", "%Y-%m-%d", "%y.%m.%d", "%Y.%m.%d", "%y,%m,%d", "%Y,%m,%d"]
+        prompt = "\nfill in the IČO: "  # IČO may be a string or an integer, both is accepted
+        user_input = True  # default input is True to start the cycle
+
+        while user_input:
+
+            # acquiring the input
+            arg_ico = None  # reset the date provided by the user in each cycle to enable
+            user_input = input(prompt)
+            user_input = user_input.replace(" ", "")  # we trim any spaces, even in the middle
+
+            # if user wants to quit
+            if user_input.lower() in quit_by:  # any of the quiting phrase
+                print('\nGoodbye!\n')
+                break  # will end the cycle immediately
+
+            arg_ico = user_input
+            result = AresApiClient.get_subject_formal_description(arg_ico)
+
+            if result:
+                print(result)  # and print it
+            else:
+                print(f'Request to retrieve data from ARES based on IČO: {arg_ico} was not succesful.')
+                print("Please double-check typos in IČO and your internet connection.")
+
