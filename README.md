@@ -8,20 +8,27 @@ It is a custom project crafted by a self-taught developer who also happens to be
 
 In the Czech Republic, each company is assigned a unique eight-digit ID number on its registration. This ID number is called ***"IČO"*** and it serves as a primary identification that can be used to track the company in public registers.
 
-The main idea of this project is to be able to retrieve (up to date!) data of economic subjects from ARES register with the IČO alone. 
+The main idea of this project is to be able to retrieve (up to date!) data of economic subjects from ARES register with the IČO alone.
+
+This may come handy for business lawyers, advocates, judges, insolvency administrators, entrepreneurs, accountants and many more people dealing with official company data 
 
 ## Usage
 
-The logic is wrapped into the ***AresApiClient class***.
+The main logic is wrapped into the ***AresApiClient class***, equipped with *get_subject_by_ico()* and *get_subject_formal_description()* methods. You can use this class in other parts of your programs without any user interaction at all.
 
-### get_subject_by_ico()
-**The core method** of *AresApiClient* is the *get_subject_by_ico()* method. **It takes an *IČO* (ID number)** as a parameter and requests the ARES register. If the subject is successfully found by the ID number, **the function returns the subject data** as a dictionary. This includes all register data, like a full name, address, and many more attributes that you may or may not need. 
+Then there is the ***AresApiClientManager*** class with its *interact()* method, which serves as an interactive cycle with the user through the CLI, prompting him to enter IČO and receive the subject's full description from ARES register.
 
-This alone may be useful to you as a single component for your other programs. Perhaps you have a list of companies that you maintain contact with? You can use this method to check whether your contact information is not out of date. 
+
+**If you run the *ares*.py module directly** by *'python -m ares'* command, you will enter **the interactive mode**.
+
+### AresApiClient.get_subject_by_ico()
+**The core method** of *AresApiClient* is the *get_subject_by_ico()* method. **It takes an *IČO* (ID number)** as a parameter and requests the ARES register. If the subject is successfully found by the ID number, **the function returns the subject data** as a dictionary. This includes all the data, like a full name, address, and many more attributes that you may or may not need. 
+
+This alone may be useful to you as a single component for your other programs. Perhaps you have a list of companies that you maintain contact with? You can use this method on a huge data set to check whether your contact information is not out of date. 
 
 Suppose you store your contact data in a database, f.e. In that case, you can use this method to generate a report on subjects with contact information out of date, or even automatically update their data. This of course demands some further coding. I might write some code for this in the future as well!
 
-### get_subject_formal_description()
+### AresApiClient.get_subject_formal_description()
 Sometimes the Czech laws (or simply common conventions) require proper identification of the subject. Usually, the whole name, IČO and full address are required to identify the subject reliably. This happens a lot in formal communication, in court decisions, or when filing a lawsuit.
 
  *get_subject_formal_description()* method **takes ico**, retrieves data from ARES **and returns formal description of the subject as it is expected to look like in a formal human written communication**.
