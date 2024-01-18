@@ -1,4 +1,5 @@
 import requests
+import string
 
 
 class AresApiClient:
@@ -62,20 +63,23 @@ class AresApiClient:
 
         Returns: string (or None if string conversion fails)
         """
-        ico = AresApiClient._force_string(ico)  # Parses ico to a string, if not already
-        if not ico:  # if the string conversion failed
-            return  # return None
+        tests = [AresApiClient._force_string,       # Parses ico to a string, if not already
+                 AresApiClient._check_if_is_digit,  # we do not use str.isdigit() alone, since it would not return ico
+                 AresApiClient._check_exceeding_allowed_length,
+                 AresApiClient._force_full_length,]
 
-        # ARES API requires 8-digit long parameter
-        ico = AresApiClient._force_full_length(ico)  # add zeros before ico up to full length
+        for test in tests:
+            ico = test(ico)
+            if not ico:
+                return  # should any of the tests fail, None is returned
 
-        return ico
+        return ico  # in case all test passed, the (potentially modified) ico is returned
 
     @staticmethod
     def _force_string(ico):
         """Parses ico to a string, if not already
 
-        Returns string (or None if the string conversion fails)
+        Returns ico as string (or None if the string conversion fails)
         """
         try:
             ico = str(ico)  # we force ico argument to be string even if it was passed as a number
@@ -89,9 +93,9 @@ class AresApiClient:
     def _force_full_length(ico):
         """Adds zeros before ico up to full 8-digit length, if not already
 
-        Returns: string
+        Returns: ico as string
         """
-        #  The IČO is always eight-digit long and ARES API strictly requires it to be.
+        #  The IČO is always eight-digit long and ARES API strictly requires it to be, otherwise it won't work.
         #  However, a lot of state institutions in the Czech Republic have IČO starting with several zeros
         #  If ico parameter is acquired by a user input, it would be cumbersome for user to write them all manually
         #  So we want to allow the user to skip those zeros, writing only the positive numbers that follow
@@ -102,6 +106,27 @@ class AresApiClient:
             ico = length_insufficient * "0" + ico
 
         return ico
+
+    @staticmethod
+    def _check_if_is_digit(ico):
+        """Checks whether passed ico is made up purely form digits characters.
+        This increases the security and typo prevention.
+
+        Return:
+            intact ico (or None if isdigit() test fails
+        """
+        if ico.isdigit():
+            return ico
+
+    @staticmethod
+    def _check_exceeding_allowed_length(ico):
+        """Checks whether passed ico exceeds the allowed length
+
+        Return:
+            intact ico (or None if allowed length is exceeded)
+        """
+        if len(ico) <= AresApiClient.ICO_LENGTH:
+            return ico
 
 
 class AresApiClientManager:
@@ -126,16 +151,15 @@ class AresApiClientManager:
                "(or keep blank and press ENTER to quit)\n"))
 
         quit_by = {"", "q", 0, "quit", "quit()", "exit", "exit()", "abort", "abort()", }
-       # allowed_formats = ["%y-%m-%d", "%Y-%m-%d", "%y.%m.%d", "%Y.%m.%d", "%y,%m,%d", "%Y,%m,%d"]
         prompt = "\nfill in the IČO: "  # IČO may be a string or an integer, both is accepted
         user_input = True  # default input is True to start the cycle
 
         while user_input:
 
             # acquiring the input
-            arg_ico = None  # reset the date provided by the user in each cycle to enable
             user_input = input(prompt)
-            user_input = user_input.replace(" ", "")  # we trim any spaces, even in the middle
+            user_input = ''.join(char for char in user_input if char not in string.whitespace) # removing any whitespace
+            # user_input = user_input.replace(" ", "")
 
             # if user wants to quit
             if user_input.lower() in quit_by:  # any of the quiting phrase
@@ -151,3 +175,6 @@ class AresApiClientManager:
                 print(f'Request to retrieve data from ARES based on IČO: {arg_ico} was not succesful.')
                 print("Please double-check typos in IČO and your internet connection.")
 
+
+if __name__ == "__main__":
+    AresApiClientManager.interact()
