@@ -31,12 +31,14 @@ For example, if you pass 00001350 to the function, it returns:
 
 Reliable identification of the subject is an important part of lawsuits or court decisions. Identifying subjects manually can be cumbersome and typo-prone. This method removes that burden and also ensures that the data are up to date.
 
-Since the company name or address can change anytime without you being notified, this is a secure way to be sure that the data are up to date. Don't underestimate this as a lawyer! Your whole insolvency petition might be rejected by the court if the subject description is not correct.
+Since the company name or address can change anytime without you being notified, this is a secure way to be sure that the data are up-to-date. Don't underestimate this as a lawyer! Your whole insolvency petition might be rejected by the court if the subject description is not correct.
 
 
 
 ## Requirements
-Please note that you will need a *python3 interpreter* (see https://www.python.org/). The project relies on the *requests* library, but this should come as a part of a standard Python installation, so you do not need to worry about it. No other third-party  libraries are needed at this point. This may change in the future if additional features are added. See requirements.txt.
+Please note that you will need a *python3 interpreter* (see https://www.python.org/). 
+The project also relies on the *requests* library. Either install it separately by typing 'pip install requests' (without the quotation marks) into your console, or write 'pip install -r requirements.txt' after you clone the repository to install all required dependencies.
+List of requirements may change if additional features are added in the future. See requirements.txt.
 
 
 ## Issues
