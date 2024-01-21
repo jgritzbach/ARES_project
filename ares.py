@@ -159,7 +159,6 @@ class AresApiClientManager:
             # acquiring the input
             user_input = input(prompt)
             user_input = ''.join(char for char in user_input if char not in string.whitespace)  # removing whitespaces
-            # user_input = user_input.replace(" ", "")
 
             # if user wants to quit
             if user_input.lower() in quit_by:  # any of the quiting phrase
