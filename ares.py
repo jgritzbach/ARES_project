@@ -1,4 +1,5 @@
 import requests
+from requests.exceptions import ConnectionError
 import string
 
 
@@ -166,13 +167,23 @@ class AresApiClientManager:
                 break  # will end the cycle immediately
 
             arg_ico = user_input
-            result = AresApiClient.get_subject_formal_description(arg_ico)
 
+            # attempting to retrieve data from ARES API.
+            try:
+                result = AresApiClient.get_subject_formal_description(arg_ico)
+
+            # If internet connection fails
+            except ConnectionError:
+                # we notify user and continue to the next cycle
+                print("Connection to server failed. Please double-check your internet connection.")
+                continue
+
+            # printing result
             if result:
-                print(result)  # and print it
+                print(result)
             else:
-                print(f'Request to retrieve data from ARES based on IČO: {arg_ico} was not succesful.')
-                print("Please double-check typos in IČO and your internet connection.")
+                print(f'Request to retrieve data from ARES based on IČO: {arg_ico} was not successful.')
+                print("Please double-check typos in IČO.")
 
 
 if __name__ == "__main__":
